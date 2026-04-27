@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ShieldMail — AI-Secured Email Client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<link rel="stylesheet" href="css/app.css"/>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-card">
+    <div class="login-logo"><div class="login-logo-icon"><img src="img/logo.png" alt="ShieldMail" width="38" height="38" style="border-radius:4px"/></div></div>
+    <h1 class="login-title">ShieldMail</h1>
+    <p class="login-sub">AI-Powered Phishing Detection for Your Email</p>
+
+    <!-- Provider quick-connect -->
+    <div class="provider-btns">
+      <button class="provider-btn" onclick="selectProvider('gmail.com')"><img src="https://www.gstatic.com/images/branding/product/1x/gmail_2020q4_32dp.png" alt="Gmail" width="20"/> Google</button>
+      <button class="provider-btn" onclick="selectProvider('outlook.com')"><img src="https://img.icons8.com/color/32/microsoft-outlook-2019.png" alt="Outlook" width="20"/> Outlook</button>
+      <button class="provider-btn" onclick="selectProvider('yahoo.com')"><img src="https://img.icons8.com/color/32/yahoo.png" alt="Yahoo" width="20"/> Yahoo</button>
+    </div>
+
+    <div class="login-error" id="login-error"></div>
+    <div class="login-field">
+      <label>Email Address</label>
+      <div class="login-input-wrap"><i class="ti ti-mail"></i><input type="email" id="login-email" placeholder="you@gmail.com"/></div>
+    </div>
+    <div class="login-field">
+      <label>App Password</label>
+      <div class="login-input-wrap"><i class="ti ti-lock"></i><input type="password" id="login-password" placeholder="App Password or IMAP Password"/></div>
+    </div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()"><span id="login-btn-text">Connect Securely</span><div class="spinner" id="login-spinner" style="display:none"></div></button>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:12px">
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+      <span style="font-size:11px;color:var(--muted);font-family:var(--mono)">OR</span>
+      <div style="flex:1;height:1px;background:var(--border)"></div>
+    </div>
+    <button class="login-btn" style="background:var(--surface2);color:var(--text);box-shadow:none;border:1px solid var(--border);margin-top:8px;font-weight:600" onclick="skipLogin()">Try Demo Mode</button>
+
+    <!-- Privacy notice -->
+    <div class="privacy-notice">
+      <i class="ti ti-lock" style="color:var(--accent);font-size:14px;flex-shrink:0"></i>
+      <span>Your credentials connect directly to your email server via IMAP. Nothing is sent to any third party. All data stays on your machine.</span>
+    </div>
+
+    <p class="login-help">Supports Gmail, Outlook, Yahoo, iCloud, Zoho & any IMAP-enabled provider.<br/>For Gmail, use an <a href="https://myaccount.google.com/apppasswords" target="_blank">App Password</a>. For Outlook, enable IMAP in settings.</p>
+  </div>
+
+  <!-- 2FA CARD (Hidden by default) -->
+  <div class="login-card" id="2fa-card" style="display:none">
+    <div class="login-logo"><div class="login-logo-icon"><i class="ti ti-mail-opened"></i></div></div>
+    <h1 class="login-title">Check Your Email</h1>
+    <p class="login-sub">We've sent a 6-digit verification code to <span id="2fa-email-display" style="font-weight:600;color:var(--text)"></span> to verify ownership.</p>
+    
+    <div class="login-error" id="2fa-error"></div>
+    <div class="login-field" style="margin-top:24px">
+      <label>Verification Code</label>
+      <div class="login-input-wrap"><i class="ti ti-key"></i><input type="text" id="login-2fa" placeholder="000000" maxlength="6" style="letter-spacing:4px;font-size:16px;text-align:center"/></div>
+    </div>
+    
+    <button class="login-btn" id="2fa-btn" onclick="verify2FA()"><span id="2fa-btn-text">Verify Code</span><div class="spinner" id="2fa-spinner" style="display:none"></div></button>
+    <button class="login-btn" style="background:transparent;color:var(--muted);box-shadow:none;border:none;margin-top:8px" onclick="cancel2FA()">Cancel</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none">
+  <aside class="sidebar">
+    <div class="logo-area">
+      <div class="logo-row"><div class="logo-icon"><img src="img/logo.png" alt="ShieldMail" width="28" height="28" style="border-radius:4px"/></div><div class="logo-name">ShieldMail</div></div>
+      <div class="logo-sub">AI PHISHING DETECTION</div>
+    </div>
+    <button class="compose-btn" onclick="openCompose()"><i class="ti ti-pencil"></i> Compose</button>
+    <nav class="nav-list">
+      <div class="nav-label">Mailbox</div>
+      <div class="nav-item active" id="nav-inbox" onclick="setNav('inbox',this)"><i class="ti ti-inbox icon-nav"></i> Inbox <span class="nav-badge accent" id="inbox-badge" style="display:none">0</span></div>
+      <div class="nav-item" onclick="setNav('starred',this)"><i class="ti ti-star icon-nav"></i> Starred</div>
+      <div class="nav-item" onclick="setNav('sent',this)"><i class="ti ti-send icon-nav"></i> Sent</div>
+      <div class="nav-item" onclick="setNav('trash',this)"><i class="ti ti-trash icon-nav"></i> Trash</div>
+      <div class="nav-label">Security</div>
+      <div class="nav-item" onclick="setNav('phishing',this)"><i class="ti ti-alert-triangle icon-nav"></i> Phishing <span class="nav-badge" id="phish-badge" style="display:none">0</span></div>
+      <div class="nav-item" onclick="setNav('safe',this)"><i class="ti ti-shield-check icon-nav"></i> Verified Safe</div>
+      <div class="nav-label">Tools</div>
+      <div class="nav-item" onclick="setNav('dashboard',this)"><i class="ti ti-chart-bar icon-nav"></i> Dashboard</div>
+      <div class="nav-item" onclick="setNav('settings',this)"><i class="ti ti-settings icon-nav"></i> Settings</div>
+    </nav>
+    <div class="sidebar-stats">
+      <div class="stat-title">Session Stats</div>
+      <div class="stat-row"><span class="stat-lbl">Scanned</span><span class="stat-val" id="stat-scanned">0</span></div>
+      <div class="stat-row"><span class="stat-lbl">Phishing</span><span class="stat-val r" id="stat-phish">0</span></div>
+      <div class="stat-row"><span class="stat-lbl">Safe</span><span class="stat-val g" id="stat-safe">0</span></div>
+    </div>
+    <div class="sidebar-user" id="sidebar-user">
+      <div class="user-email" id="user-email"></div>
+      <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i> Logout</button>
+    </div>
+  </aside>
+
+  <div class="email-list-panel">
+    <div class="list-header">
+      <div class="list-title-row">
+        <div class="list-title" id="list-title">Inbox</div>
+        <button class="sync-btn" onclick="syncEmails()"><i class="ti ti-refresh sync-ico"></i> Sync</button>
+      </div>
+      <div class="search-box"><i class="ti ti-search"></i><input type="text" placeholder="Search emails..." oninput="onSearch(this.value)" id="search-input"/></div>
+    </div>
+    <div class="email-items" id="email-items"></div>
+  </div>
+
+  <main class="main-content">
+    <div class="empty-state" id="empty-state">
+      <i class="ti ti-mail-opened" style="font-size:52px;opacity:.2"></i>
+      <div class="empty-title">Select an email to read</div>
+      <div class="empty-sub">AI analysis runs automatically on every email</div>
+    </div>
+    <div class="email-view" id="email-view">
+      <div class="ev-toolbar">
+        <button class="tb-btn" onclick="goBack()"><i class="ti ti-arrow-left"></i> Back</button>
+        <button class="tb-btn" onclick="trashEmail()"><i class="ti ti-trash"></i> Trash</button>
+        <button class="tb-btn danger" onclick="trashEmail()"><i class="ti ti-alert-triangle"></i> Report Phishing</button>
+        <div style="flex:1"></div>
+        <button class="tb-btn" onclick="rescanEmail()"><i class="ti ti-refresh"></i> Re-scan</button>
+        <button class="tb-btn primary" onclick="replyToEmail()"><i class="ti ti-corner-up-left"></i> Reply</button>
+      </div>
+      <div class="ev-body-wrap">
+        <div class="ev-content">
+          <div class="ev-subject" id="ev-subject"></div>
+          <div class="ev-meta">
+            <div class="ev-avatar" id="ev-avatar"></div>
+            <div class="ev-meta-info"><div class="ev-name" id="ev-name"></div><div class="ev-addr" id="ev-addr"></div></div>
+            <div class="ev-date" id="ev-date"></div>
+          </div>
+          <div class="ev-text" id="ev-body"></div>
+          <div class="reply-area" id="reply-area" style="display:none;margin-top:24px">
+            <textarea id="reply-textarea" placeholder="Write your reply..."></textarea>
+            <div class="reply-actions">
+              <button class="tb-btn primary" onclick="sendReply()"><i class="ti ti-send"></i> Send Reply</button>
+              <button class="tb-btn" onclick="hideReply()">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dashboard-view">
+      <div class="dv-title">Security Dashboard</div>
+      <div class="dv-sub">Real-time phishing threat analytics</div>
+      <div class="dv-grid">
+        <div class="dv-card"><div class="dv-card-label">Total Emails</div><div class="dv-card-val" id="dv-total">0</div></div>
+        <div class="dv-card"><div class="dv-card-label">Scanned</div><div class="dv-card-val y" id="dv-scanned">0</div></div>
+        <div class="dv-card"><div class="dv-card-label">Threats Detected</div><div class="dv-card-val r" id="dv-phishing">0</div></div>
+        <div class="dv-card"><div class="dv-card-label">Verified Safe</div><div class="dv-card-val g" id="dv-safe">0</div></div>
+        <div class="dv-card"><div class="dv-card-label">Unread</div><div class="dv-card-val" id="dv-unread">0</div></div>
+      </div>
+      <div class="dv-chart-row">
+        <div class="dv-chart-card"><div class="dv-chart-title">Threat Distribution</div><canvas id="chart-donut" style="width:100%;height:180px"></canvas></div>
+        <div class="dv-chart-card"><div class="dv-chart-title">Email Overview</div><canvas id="chart-bar" style="width:100%;height:180px"></canvas></div>
+      </div>
+    </div>
+    <div class="settings-view">
+      <div class="sv-title">Settings</div>
+      <div class="sv-sub">Manage your account and preferences</div>
+      <div class="sv-card">
+        <div class="sv-card-title"><i class="ti ti-mail"></i> Gmail Integration</div>
+        <div class="sv-field"><label>Gmail Address</label><input type="email" id="s-email" placeholder="your.email@gmail.com"/></div>
+        <div class="sv-field"><label>App Password</label><input type="password" id="s-password" placeholder="Google App Password (16 chars)"/></div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;max-width:420px;line-height:1.7">Enable 2-Step Verification, then generate an App Password at <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color:var(--accent)">myaccount.google.com/apppasswords</a>.</p>
+        <button class="tb-btn primary" onclick="saveSettings()"><i class="ti ti-device-floppy"></i> Save Settings</button>
+      </div>
+      <div class="sv-card">
+        <div class="sv-card-title"><i class="ti ti-shield-check"></i> Scan Settings</div>
+        <p style="font-size:13px;color:var(--text2);line-height:1.7">All incoming emails are automatically scanned using a RandomForest ML classifier trained on phishing patterns. The model analyzes 12 features including URL patterns, urgency words, readability scores, and HTML content.</p>
+      </div>
+    </div>
+  </main>
+
+  <aside class="analysis-panel hidden">
+    <div class="ap-header"><i class="ti ti-robot"></i> AI Analysis <span class="ml-badge">ML MODEL</span></div>
+    <div class="scan-loading" id="scan-loading"><div class="scan-dots"><div class="scan-dot"></div><div class="scan-dot"></div><div class="scan-dot"></div></div><span class="scan-text">Analyzing email...</span></div>
+    <div id="analysis-result" style="display:none">
+      <div class="verdict-card pending" id="verdict-card">
+        <div class="verdict-ico" id="verdict-ico"><i class="ti ti-clock"></i></div>
+        <div class="verdict-lbl pending" id="verdict-lbl">Pending</div>
+        <div class="verdict-conf" id="verdict-conf">—</div>
+      </div>
+      <div class="risk-section"><div class="section-label">Phishing Risk</div><div class="risk-track"><div class="risk-fill" id="risk-fill" style="width:0%;background:var(--muted)"></div></div><div class="risk-labels"><span>0%</span><span id="risk-pct">—</span><span>100%</span></div></div>
+      <div class="ap-divider"></div>
+      <div class="feat-section"><div class="section-label">Feature Breakdown</div><div class="feat-grid" id="feat-grid"></div></div>
+    </div>
+  </aside>
+</div>
+
+<!-- COMPOSE MODAL -->
+<div class="modal-bg" id="modal-bg" onclick="handleOverlayClick(event)">
+  <div class="compose-modal">
+    <div class="cm-header"><i class="ti ti-pencil"></i> New Message — AI Phishing Check <button class="cm-close" onclick="closeCompose()"><i class="ti ti-x"></i></button></div>
+    <div class="cm-field"><div class="cm-label">To</div><input type="text" id="c-to" placeholder="recipient@example.com"/></div>
+    <div class="cm-field"><div class="cm-label">Subject</div><input type="text" id="c-subject" placeholder="Subject line..."/></div>
+    <div class="cm-field"><div class="cm-label">Body</div><textarea id="c-body" placeholder="Write your email or paste suspicious content to analyze..."></textarea></div>
+    <div class="cm-result" id="cm-result"></div>
+    <div class="cm-footer">
+      <button class="tb-btn primary" onclick="sendEmail()"><i class="ti ti-send"></i> Send</button>
+      <button class="tb-btn" onclick="analyzeCompose()"><i class="ti ti-shield-check"></i> Scan for Phishing</button>
+      <div id="cm-spinner" style="display:none"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+function replyToEmail(){document.getElementById('reply-area').style.display='block';document.getElementById('reply-textarea').focus()}
+function hideReply(){document.getElementById('reply-area').style.display='none'}
+</script>
+<script src="js/app.js"></script>
+</body>
+</html>

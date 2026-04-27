@@ -1,0 +1,106 @@
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all var(--transition-fast);
+  border: none;
+  text-decoration: none;
+  gap: 0.5rem;
+}
+
+.btn--primary {
+  background-color: var(--accent);
+  color: #000;
+}
+
+.btn--primary:hover {
+  background-color: #00ffb3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 229, 160, 0.2);
+}
+
+.btn--outline {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: var(--border);
+}
+
+.btn--outline:hover {
+  border-color: var(--text-primary);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge--mint {
+  background-color: rgba(0, 229, 160, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(0, 229, 160, 0.2);
+}
+
+.badge--danger {
+  background-color: rgba(255, 71, 87, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(255, 71, 87, 0.2);
+}
+
+/* Cards */
+.card {
+  background-color: var(--surface);
+  border: var(--border);
+  padding: var(--spacing-md);
+  border-radius: 0; /* Strict editorial design */
+}
+
+/* Forms & Inputs */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.form-label {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.textarea-scan {
+  width: 100%;
+  min-height: 200px;
+  background-color: var(--bg-dark);
+  border: var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  padding: var(--spacing-sm);
+  resize: vertical;
+  border-radius: var(--radius);
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.textarea-scan:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* Micro-animations */
+.textarea-scan:hover {
+  box-shadow: 0 0 15px rgba(0, 229, 160, 0.05);
+}
