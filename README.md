@@ -67,6 +67,7 @@ Powered by a local `scikit-learn` machine-learning pipeline, ShieldMail automati
 ## 🔒 Security & Privacy Notice
 ShieldMail stores your App Passwords in a local, unencrypted SQLite database (`settings.db`) solely for the purpose of maintaining an active session on your machine. Ensure your local machine is secure. No telemetry, tracking, or external API calls are made.
 
+Hosted at : https://shield-mail.vercel.app/
 ---
 <div align="center">
   <i>Built to keep your inbox yours.</i>
